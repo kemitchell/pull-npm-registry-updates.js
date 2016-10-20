@@ -1,0 +1,21 @@
+{
+  "name": "registry-pull-stream",
+  "version": "0.0.0",
+  "description": "pull-stream of npm registry updates",
+  "author": "Kyle E. Mitchell <kyle@kemitchell.com> (https://kemitchell.com/)",
+  "repository": "kemitchell/registry-pull-stream.js",
+  "files": [
+    "index.js"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "multistream": "^2.1.0",
+    "pull-split": "^0.2.0",
+    "pull-stream": "^3.4.5",
+    "pull-utf8-decoder": "^1.0.2",
+    "stream-to-pull-stream": "^1.7.2"
+  }
+}
