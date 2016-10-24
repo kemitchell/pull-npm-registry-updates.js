@@ -1,9 +1,9 @@
 {
-  "name": "registry-pull-stream",
+  "name": "pull-npm-registry-updates",
   "version": "0.0.0",
   "description": "pull-stream of npm registry updates",
   "author": "Kyle E. Mitchell <kyle@kemitchell.com> (https://kemitchell.com/)",
-  "repository": "kemitchell/registry-pull-stream.js",
+  "repository": "kemitchell/pull-npm-registry-updates.js",
   "files": [
     "index.js"
   ],
