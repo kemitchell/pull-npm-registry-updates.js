@@ -27,7 +27,7 @@ var counter = 100
 function pull () {
   stream(false, function (_, chunk) {
     counter--
-    console.log('%s is %j', 'chunk', chunk)
+    console.log('%s %s is %j', 'chunk', 100 - counter, chunk)
     if (counter > 0) {
       pull()
     }

@@ -5,10 +5,10 @@ var url = require('url')
 
 var decoder = require('pull-utf8-decoder')
 var filter = require('pull-stream/throughs/filter')
-var map = require('pull-stream/throughs/map')
 var pull = require('pull-stream')
 var source = require('stream-to-pull-stream').source
 var split = require('pull-split')
+var through = require('pull-through')
 
 module.exports = function (options) {
   options = options || {}
@@ -28,7 +28,7 @@ module.exports = function (options) {
           since: since,
           limit: limit,
           include_docs: 'true',
-          feed: 'continuous'
+          feed: 'normal'
         })
       }, function (response) {
         var statusCode = response.statusCode
@@ -45,15 +45,30 @@ module.exports = function (options) {
     })),
     decoder(),
     split(),
-    map(function (chunk) {
-      chunk = JSON.parse(chunk)
-      if (chunk.hasOwnProperty('last_seq')) {
-        since = chunk.last_seq
-        return null
-      } else {
-        return transform ? transform(chunk) : chunk
+    through(
+      function (line) {
+        // CouchDB 2.0 responds to GET /{db}/_changes?feed=normal like:
+        //
+        //     {"results":[ // Skip.
+        //     {"seq":2,"id":"...","changes":[...],"doc":{...}},
+        //     {"seq":3,"id":"...","changes":[...],"doc":{...}},
+        //     {"seq":4,"id":"...","changes":[...],"doc":{...}},
+        //     {"seq":5,"id":"...","changes":[...],"doc":{...}}
+        //     ],
+        //     "last_seq":...}
+        if (line.indexOf('{"seq":') === 0) {
+          if (line.lastIndexOf(',') === line.length - 1) {
+            line = line.slice(0, -1)
+          }
+          var update = JSON.parse(line)
+          this.queue(transform ? transform(update) : update)
+          since++
+        }
+      },
+      function (end) {
+        this.queue(null)
       }
-    }),
+    ),
     filter(function (chunk) {
       return chunk !== null
     })
