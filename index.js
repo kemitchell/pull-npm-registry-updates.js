@@ -14,6 +14,7 @@ module.exports = function (options) {
   options = options || {}
   var since = options.since || 0
   var limit = options.limit || 8
+  var docs = options.include_docs || true
   var registry = url.parse(
     options.registry || 'https://replicate.npmjs.com'
   )
@@ -27,7 +28,7 @@ module.exports = function (options) {
         path: '/_changes?' + query({
           since: since,
           limit: limit,
-          include_docs: 'true',
+          include_docs: docs ? 'true' : 'false',
           feed: 'normal'
         })
       }, function (response) {
